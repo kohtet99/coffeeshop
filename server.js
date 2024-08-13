@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const dbConnect = require("./configs/db.config.js");
 const controller = require("./controllers/customer.controller.js");
+const router = require("./routers/router.js");
 
 dotenv.config();
 dbConnect();
@@ -16,6 +17,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use("/api/employee", router);
 
 app.get("/", (req, res) => {
   res.send("hello");
