@@ -18,13 +18,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/employee", router);
-
-app.get("/", (req, res) => {
-  res.send("hello");
-});
-
-app.post("/post", controller.create);
+app.use("/api/cms", router);
 
 const port = process.env.PORT || 8080;
 

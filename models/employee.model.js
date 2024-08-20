@@ -30,16 +30,16 @@ const employeeSchema = new mongoose.Schema(
   }
 );
 
-// employeeSchema.pre("save", async (next) => {
-//   if (!this.isModified("password")) next();
+employeeSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
 
-//   this.password = await bcrypt.hash(this.password, 10);
-//   next();
-// });
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
 
-// employeeSchema.method.comparePassword = async (enterPassword) => {
-//   return await bcrypt.compare(enterPassword, this.password);
-// };
+employeeSchema.method.comparePassword = async (enterPassword) => {
+  return await bcrypt.compare(enterPassword, this.password);
+};
 
 employeeSchema.plugin(AutoIncrement, { inc_field: "employee_id" });
 
