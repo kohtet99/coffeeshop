@@ -33,12 +33,12 @@ const employeeSchema = new mongoose.Schema(
 employeeSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
-  this.password = await bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 12);
   next();
 });
 
-employeeSchema.method.comparePassword = async (enterPassword) => {
-  return await bcrypt.compare(enterPassword, this.password);
+employeeSchema.methods.comparePassword = async function(enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
 };
 
 employeeSchema.plugin(AutoIncrement, { inc_field: "employee_id" });

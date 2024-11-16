@@ -10,6 +10,7 @@ exports.register = async (req, res, next) => {
     return next(new CustomError("Email already exists!", 400));
   }
 
+  // If email doesn't exist, proceed to create a new employee
   const newEmployee = await employeeModel.create({
     name,
     email,
@@ -17,7 +18,8 @@ exports.register = async (req, res, next) => {
     phone,
     position,
   });
-  res.status(201).json({
+
+  res.status(200).json({
     success: true,
     newEmployee,
   });
@@ -26,6 +28,7 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
 
+  // Check if both email and password are provided
   if (!email || !password) {
     return next(new CustomError("Please enter email and password!", 400));
   }
@@ -34,12 +37,17 @@ exports.login = async (req, res, next) => {
   if (!user) {
     return next(new CustomError("Invalid email!", 400));
   }
+
+  // Compare entered password with the hashed password in the database
   const isCorrectPassword = await user.comparePassword(password);
+
   if (!isCorrectPassword) {
     return next(new CustomError("Invalid password!", 400));
   }
 
+  // Send response with the user data
   res.status(200).json({
+    success: true,
     currentEmployee: user,
   });
 };

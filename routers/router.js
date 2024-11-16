@@ -1,4 +1,5 @@
 const express = require("express");
+const upload = require("../middlewares/upload_image.js");
 const customerController = require("../controllers/customer.controller.js");
 const employeeController = require("../controllers/employee.controller.js");
 const employeeShiftControler = require("../controllers/employeeShift.controller.js");
@@ -40,5 +41,9 @@ router.delete("/employee/deleteAll", employeeController.deleteAll);
 
 router.post("/employeeShift/create", employeeShiftControler.create);
 router.get("/employeeShift/test/", employeeShiftControler.test);
+
+router.post("/upload", upload.single("file"), (req, res) => {
+  res.status(200).json(req.file);
+});
 
 module.exports = router;

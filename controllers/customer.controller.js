@@ -5,7 +5,7 @@ exports.register = async (req, res, next) => {
   const { customer_id, name, email, phone, password, loyalty_points } =
     req.body;
 
-  const isEmail = customerModel.findOne({ email });
+  const isEmail = await customerModel.findOne({ email });
   if (isEmail) {
     return next(new CustomError("Email is already exist!", 400));
   }
@@ -19,7 +19,7 @@ exports.register = async (req, res, next) => {
     loyalty_points,
   });
 
-  res.status(200).json({
+  res.status(201).json({
     message: "success",
     newCustomer,
   });

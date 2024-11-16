@@ -39,11 +39,11 @@ customerSchema.pre("save", async function (next) {
   next();
 });
 
-customerSchema.method.comparePassword = async (enterPassword) => {
+customerSchema.methods.comparePassword = async function (enterPassword) {
   return await bcrypt.compare(enterPassword, this.password);
 };
 
-customerSchema.method.accessToken = async () => {
+customerSchema.methods.accessToken = async function () {
   return await jwt.sign({ id: this.id }, process.env.ACCESS_TOKEN_KEY, {
     expiresIn: "7d",
   });
