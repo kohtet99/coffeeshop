@@ -1,22 +1,16 @@
 const mongoose = require("mongoose");
-const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const orderSchema = new mongoose.Schema(
   {
-    order_id: {
-      type: Number,
-      require: true,
+    order_id:Number,
+    customer_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customers",
+      
     },
-    customer_id: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Customers",
-        require: true,
-      },
-    ],
-    order_date: {
+    orderDate: {
       type: Date,
-      default: Date.now,
+      default: Date.now(),
     },
     totalAmount: {
       type: Number,
@@ -25,7 +19,7 @@ const orderSchema = new mongoose.Schema(
     orderStatus: {
       type: String,
       enum: ["pending", "completed", "cancelled"], // Define possible statuses
-      default: "pending",
+      default: "completed",
     },
   },
   {
@@ -39,7 +33,6 @@ const orderSchema = new mongoose.Schema(
   }
 );
 
-orderSchema.plugin(AutoIncrement, { inc_field: "order_id" });
 
 const orderModel = mongoose.model("Order", orderSchema);
 

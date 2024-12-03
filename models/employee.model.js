@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
+const jwt=require("jsonwebtoken")
 
 const employeeSchema = new mongoose.Schema(
   {
@@ -15,6 +16,16 @@ const employeeSchema = new mongoose.Schema(
     },
     phone: String,
     salary: {
+      type: Number,
+      default: 0,
+    },
+    location:String,
+    image_url:String,
+    hire_date: {
+      type: Date,
+      default:Date.now(),
+    },
+    role: { 
       type: Number,
       default: 0,
     },
@@ -37,11 +48,17 @@ employeeSchema.pre("save", async function (next) {
   next();
 });
 
-employeeSchema.methods.comparePassword = async function(enteredPassword) {
+employeeSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
 employeeSchema.plugin(AutoIncrement, { inc_field: "employee_id" });
+
+employeeSchema.methods.accessToken = async function () {
+  return await jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN_KEY, {
+    expiresIn: "7d",
+  });
+};
 
 const employeeModel = mongoose.model("Employees", employeeSchema);
 module.exports = employeeModel;

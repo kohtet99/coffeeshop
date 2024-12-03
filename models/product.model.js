@@ -15,6 +15,20 @@ const productSchema = new mongoose.Schema(
     price: {
       type: Number,
     },
+    discount: {
+      type: Number,
+      default: 0,
+    },
+    reorderlevel: {
+      type: Number,
+      default: 0,
+    },
+    origin: {
+      type: String,
+    },
+    ingredients: {
+      type: String,
+    },
     category: {
       type: String,
       trim: true,
@@ -23,23 +37,18 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    supplier_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Suppliers",
-    },
-    image: {
+    supplier_id: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Suppliers",
+      },
+    ],
+    image_url: {
       type: String,
-      required: true,
     },
   },
   {
     timestamps: true,
-    toJSON: {
-      virtuals: true,
-    },
-    toObject: {
-      virtuals: true,
-    },
   }
 );
 

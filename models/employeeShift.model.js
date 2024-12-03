@@ -26,6 +26,9 @@ const employeeShiftSchema = new mongoose.Schema(
     toObject: {
       virtuals: true,
     },
+  },
+  {
+    timestamps: true,
   }
 );
 

@@ -2,10 +2,9 @@ const supplierModel = require("../models/supplier.model.js");
 
 exports.create = async (req, res) => {
   try {
-    const { supplier_id, name, contact_person, phone, email } = req.body;
+    const { name, contact_person, phone, email } = req.body;
 
     const newSupplier = await supplierModel.create({
-      supplier_id,
       name,
       contact_person,
       phone,
@@ -22,4 +21,23 @@ exports.create = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+exports.getAllSuppliers = async (req, res) => {
+  const suppliers = await supplierModel.find();
+
+  res.status(200).json({
+    success: true,
+    suppliers,
+  });
+};
+
+exports.getSupplier = async (req, res) => {
+  const id = req.params.id;
+  const supplier = await supplierModel.findById(id);
+
+  res.status(200).json({
+    success: true,
+    supplier,
+  });
 };
