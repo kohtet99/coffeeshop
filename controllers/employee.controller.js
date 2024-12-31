@@ -17,11 +17,11 @@ exports.register = async (req, res, next) => {
   if (isEmailExists) {
     return next(new CustomError("Email already exists!", 400));
   }
-  // const image_url = `http://localhost:8080/uploads/${req.file.filename}`;
+  // const image_url = `https://coffeeshop-19v6.onrender.com/uploads/${req.file.filename}`;
   const intRole = parseInt(role);
   let image_url = "";
   if (req.file) {
-    image_url = `http://localhost:8080/uploads/${req.file.filename}`;
+    image_url = `https://coffeeshop-19v6.onrender.com/uploads/${req.file.filename}`;
   } else {
     console.log(url);
     image_url = url;
@@ -157,7 +157,7 @@ exports.updateEmployee = async (req, res, next) => {
   let image_url = "";
   const intRole = parseInt(role);
   if (req.file) {
-    image_url = `http://localhost:8080/uploads/${req.file.filename}`;
+    image_url = `https://coffeeshop-19v6.onrender.com/uploads/${req.file.filename}`;
   } else {
     console.log(url);
     image_url = url;

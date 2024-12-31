@@ -17,7 +17,7 @@ exports.createProduct = async (req, res) => {
       ingredients,
     } = req.body;
 
-    const image_url = `http://localhost:8080/uploads/${req.file.filename}`;
+    const image_url = `https://coffeeshop-19v6.onrender.com/uploads/${req.file.filename}`;
 
     const supplierName = suppliers.split(",");
     console.log(supplierName);
@@ -110,7 +110,7 @@ exports.updateProduct = async (req, res) => {
   let image_url = "";
 
   if (req.file) {
-    image_url = `http://localhost:8080/uploads/${req.file.filename}`;
+    image_url = `https://coffeeshop-19v6.onrender.com/uploads/${req.file.filename}`;
   } else {
     console.log(url);
     image_url = url;
