@@ -46,7 +46,7 @@ exports.populate = async (req, res, next) => {
 };
 
 exports.getAllOrders = async (req, res) => {
-  const orders = await orderModel.find().populate("customer_id");
+  const orders = await orderModel.find().populate("customer_id").sort({createdAt:-1}); //sort
   const orderCount = await orderModel.countDocuments();
   const completedOrder = await orderModel.countDocuments({
     orderStatus: "completed",
@@ -72,38 +72,77 @@ exports.getAllOrders = async (req, res) => {
   });
 };
 
-exports.getPaginateOrders = async (req, res) => {
-  const currentPage = parseInt(req.query.page, 10) || 1;
-  const pageSize = parseInt(req.query.pageSize, 10) || 10;
+exports.getFlutterPaginateOrders = async (req, res) => {
   const { startDate, endDate } = req.query;
 
   const filter = {};
-
-  // Add date filtering if startDate and endDate are provided
   if (startDate && endDate) {
-    filter.orderDate = {
+    filter.createdAt = {
       $gte: new Date(startDate),
-      $lte: new Date(endDate),
+      $lte: new Date(new Date(endDate).setHours(23, 59, 59, 999)),
     };
   }
 
   try {
     const orders = await orderModel
-      .find(filter).sort({createdAt:-1})
-      .populate("customer_id");
-
-    const totalOrders = await orderModel.countDocuments(filter);
+      .find(filter)
+      .sort({ createdAt: -1 })
+      .populate("customer_id")
+      ;
 
     res.status(200).json({
       success: true,
       orders,
-      pagination: {
-        currentPage,
-        totalPages: Math.ceil(totalOrders / pageSize),
-        totalOrders,
-      },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+//angular
+exports.getOrderByDate = async (req, res) => {
+  const startDate = req.query.startDate;
+  const endDate = req.query.endDate || Date.now();
+  const orders = await orderModel
+    .find({
+      orderDate: { $gte: startDate, $lte: endDate },
+    })
+    .sort({ orderDate: -1 });
+  res.status(200).json({
+    success: true,
+    orders,
+    startDate,
+    endDate,
+  });}
+
+  //angular
+  exports.getPaginateOrders = async (req, res) => {
+    const currentPage = req.query.page;
+    const pageSize = req.query.pageSize;
+    const orders = await orderModel
+      .find()
+      .skip(pageSize * (currentPage - 1))
+      .limit(pageSize)
+      .populate("customer_id");
+    res.status(200).json({
+      orders,
+    });
+  };
+
+  //angular
+  exports.deletedOrder = async (req, res) => {
+    const id = req.params.id;
+    const deletedOrder = await orderModel.findByIdAndDelete(id);
+    res.status(200).json({
+      success: true,
+      deletedOrder,
+    });
+  };
+
+  exports.getSortDate = async (req, res) => {
+    const dates = await orderModel.find().sort({ orderDate: -1 });
+    res.status(200).json({
+      success: true,
+      dates,
+    });
+  };

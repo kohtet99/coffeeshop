@@ -67,17 +67,44 @@ exports.login = async (req, res, next) => {
     currentEmployee: user,
   });
 };
+
+
+
 exports.getEmployeeInfo = async (req, res, next) => {
-  // const id = req.params.id;
-  const id = req.user._id;
-  const employeeInfo = await employeeModel.findById(id);
-  if (!employeeInfo)
-    return next(new CustomError("There is no employee in DB!", 400));
+  if (!req.user || !req.user._id) {
+    return next(new CustomError('User not authenticated!', 401));
+  }
+
+  try {
+    const id = req.user._id;
+    const employeeInfo = await employeeModel.findById(id);
+
+    if (!employeeInfo) {
+      return next(new CustomError('There is no employee in DB!', 400));
+    }
+
+    res.status(200).json({
+      success: true,
+      employeeInfo,
+    });
+  } catch (err) {
+    next(new CustomError('Something went wrong!', 500));
+  }
+};
+exports.getEmployeesByDate = async (req, res) => {
+  const startDate = req.query.startDate;
+  const endDate = req.query.endDate || Date.now();
+  const employees = await employeeModel
+    .find({
+      createdAt: { $gte: startDate, $lte: endDate },
+    })
+    .sort({ createdAt: -1 });
   res.status(200).json({
     success: true,
-    employeeInfo,
+    employees,
   });
 };
+
 exports.getOneEmployee = async (req, res) => {
   const email = req.query.email;
   const employee = await employeeModel.findOne({ email });

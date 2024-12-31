@@ -1,34 +1,20 @@
-const jwt = require("jsonwebtoken");
-const customerModel = require("../models/customer.model");
-const CustomError = require("../Utils/customError");
+const jwt = require('jsonwebtoken');
+const CustomError = require('../Utils/customError');
 
-const isAuthenticated = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return next(new CustomError("Please login to access this resourse", 403));
+const authenticateUser = (req, res, next) => {
+  const token = req.headers['authorization']?.split(' ')[1];
+
+  if (!token) {
+    return next(new CustomError('User not authenticated!', 401));
   }
-  const token = authHeader.split(" ")[1];
-  if (!token)
-    return next(new CustomError("Please login to access this resourse", 403));
-  const decoded = await jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
-  if (!decoded) return next(new CustomError("Token is not valid!", 403));
-  const user = await customerModel.findById(decoded.id);
-  if (!user)
-    return next(new CustomError("Please login to access this resourse", 403));
-  req.user = user;
-  next();
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return next(new CustomError('Token is invalid or expired', 401));
+    }
+    req.user = decoded;
+    next();
+  });
 };
 
-const authorizeRoles = (roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.user?.role)) {
-      return next(
-        new CustomError(
-          `Role: ${req.user?.role} is not allowed to access this resourse`,
-          403
-        )
-      );
-    }
-    next();
-  };
-};
+module.exports = authenticateUser;

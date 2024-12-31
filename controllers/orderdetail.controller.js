@@ -63,18 +63,21 @@ exports.populateOrderDetails = async (req, res, next) => {
       return res.status(404).json({ message: "OrderDetail not found" });
     }
 
-    console.log("OrderDetail with populated fields:", orderDetail);
+
     res.status(200).json({ orderDetail });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+
 exports.getOrderDetails = async (req, res) => {
+  const startDate = req.query.startDate;
+  const endDate = req.query.endDate || Date.now();
   try {
     const orderDetails = await orderDetailModel
       .find({
-        createdAt: { $gte: new Date("2024-1-1"), $lte: Date.now() },
+        createdAt: { $gte: startDate, $lte: endDate },
       })
       .sort({ createdAt: -1 })
       .populate("order_id")

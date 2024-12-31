@@ -39,13 +39,39 @@ exports.getPayments = async (req, res) => {
 
 // Get a single payment by ID
 exports.getOnePayment = async (req, res) => {
-  const id = req.params.id;
-  const payment = await paymentModel.findById({order_id: id}).populate("order_id");
+  try {
+    const id = req.params.id;
+
+    // Find the payment by order_id (assuming you are using order_id as the identifier)
+    const payment = await Payment.findOne({ order_id: id }).populate("order_id");
+
+    if (!payment) {
+      return res.status(404).json({ message: 'Payment details not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      payment,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching payment details', error: error.message });
+  }
+};
+
+exports.getPaymentByDate = async (req, res) => {
+  const startDate = req.query.startDate;
+  const endDate = req.query.endDate || Date.now();
+  const payment = await Payment
+    .find({
+      createdAt: { $gte: startDate, $lte: endDate },
+    })
+    .sort({ createdAt: -1 });
   res.status(200).json({
     success: true,
     payment,
   });
 };
+
 
 // Update a payment
 exports.updatePayment = async (req, res) => {

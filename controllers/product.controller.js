@@ -68,6 +68,15 @@ exports.getAllProducts = async (req, res) => {
   });
 };
 
+exports.getOneProducts= async(req,res)=>{
+  const productId =req.params.id;
+  const product = await productModel.findById(productId);
+  
+  res.status(200).json({
+    product
+  })
+}
+
 exports.getProducts = async (req, res) => {
   const currentPage = req.query.page;
   const pageSize = req.query.pageSize;
@@ -146,4 +155,28 @@ exports.deleteProduct = async (req, res) => {
     success: true,
     deleteProduct,
   });
+};
+
+exports.updatedOuantity = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { stock_quantity } = req.body;
+    const updatedProduct = await productModel.findByIdAndUpdate(
+      id,
+      {
+        stock_quantity,
+      },
+      { new: true }
+    );
+    // const updatedProduct = await productModel.updateOne(
+    //   { _id: mongoose.Types.ObjectId(id) },
+    //   { $set: { stock_quantity: stock_quantity, updatedAt: new Date() } } // Update stock_quantity and updatedAt
+    // );
+    if (!updatedProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.status(200).json({ message: "Product updated", updatedProduct });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating product", error });
+  }
 };
